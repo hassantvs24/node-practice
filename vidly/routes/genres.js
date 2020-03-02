@@ -25,16 +25,16 @@ const genreSchema = new mongoose.Schema({
 const Genre = mongoose.model('Genre', genreSchema);
 
  
-    router.get('/', function (req, res) {
-        res.send(genres);
+    router.get('/', async function (req, res) {
+        const genre = await Genre.find();
+        res.send(genre);
     });
 
-    router.get('/:id', function (req, res) {
+    router.get('/:id', async function (req, res) {
 
-            let genre = genres.find(c => c.id === parseInt(req.params.id)); //'params' get data form url parameter
-            if(!genre) return res.status(404).send('Given id not found');
 
-            res.send(genre);
+        const genre = await Genre.findById(req.params.id);
+        res.send(genre);
 
     });
 
@@ -51,29 +51,21 @@ const Genre = mongoose.model('Genre', genreSchema);
                 name: req.body.name
             });
 
-            /*let genre = {
-                id: genres.length +1,
-                name: req.body.name
-            };*/
-
-           // genres.push(genre);
            try {
             const result = await genre.save();
                 res.send(result);
             }
             catch (ex) {
-                for(field in ex.errors){
-                    console.log(ex.errors[field]);
-                }
+                return res.status(400).send(ex.message);
             }
 
     });
 
 
 
-    router.put('/:id', function (req, res) {
+    router.put('/:id', async function (req, res) {
 
-            let genre = genres.find(c => c.id === parseInt(req.params.id)); //'params' get data form url parameter
+            const genre = await Genre.findById(req.params.id); //'params' get data form url parameter
             if(!genre) return res.status(404).send('Given id not found');
 
             const {error} = validateGenre(req.body)
@@ -82,20 +74,21 @@ const Genre = mongoose.model('Genre', genreSchema);
             }
 
             genre.name = req.body.name;
-            res.send(genres);
 
+            try {
+                const result = await genre.save();
+                    res.send(result);
+                }
+            catch (ex) {
+                    return res.status(400).send(ex.message);
+                }
     });
 
 
-    router.delete('/:id', function (req, res) {
 
-        let genre = genres.find(c => c.id === parseInt(req.params.id)); //'params' get data form url parameter
-        if(!genre) return res.status(404).send('Given id not found');
-
-        const index = genres.indexOf(genre);
-        genres.splice(index, 1);
-        res.send(genres);
-
+    router.delete('/:id', async function (req, res) {
+        const genre = await Genre.findOneAndRemove(req.params.id);
+        res.send(genre);
     });
 
 
