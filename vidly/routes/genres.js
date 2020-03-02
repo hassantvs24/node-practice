@@ -1,4 +1,6 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const Joi = require('joi');
 const router = express.Router();
 
 const genres = [
@@ -9,6 +11,18 @@ const genres = [
     {id: 5, name:'Animation'}
 ];
 
+
+const genreSchema = new mongoose.Schema({
+    name: {
+        type: String, 
+        required: true, 
+        minlength: 5, 
+        maxlength: 255
+    },
+    date: {type: Date, default: Date.now},
+});
+
+const Genre = mongoose.model('Genre', genreSchema);
 
  
     router.get('/', function (req, res) {
@@ -26,21 +40,33 @@ const genres = [
 
 
 
-    router.post('/', function (req, res) {
+    router.post('/', async function (req, res) {
 
             const {error} = validateGenre(req.body)
             if(error) {
                 return res.status(400).send(error.details[0].message);
             }
 
-            let genre = {
+            const genre = new Genre({
+                name: req.body.name
+            });
+
+            /*let genre = {
                 id: genres.length +1,
                 name: req.body.name
-            };
+            };*/
 
-            genres.push(genre);
+           // genres.push(genre);
+           try {
+            const result = await genre.save();
+                res.send(result);
+            }
+            catch (ex) {
+                for(field in ex.errors){
+                    console.log(ex.errors[field]);
+                }
+            }
 
-            res.send(genres);
     });
 
 
