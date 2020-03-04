@@ -1,4 +1,6 @@
 const genres = require('./routes/genres');
+const customers = require('./routes/customers');
+const movies = require('./routes/movies');
 const mongoose = require('mongoose');
 const express = require('express');
 const app = express();
@@ -13,6 +15,8 @@ app.use(express.json()); // for parsing application/json
 app.use(express.static('public'));//Access public asset
 
 app.use('/api/genres', genres);
+app.use('/api/customers', customers);
+app.use('/api/movies', movies);
 
 
 
