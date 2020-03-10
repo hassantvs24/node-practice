@@ -1,18 +1,17 @@
 const {Genre, validate} = require('../models/genre');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const asyncMiddleware = require('../middleware/async');
 const express = require('express');
 const router = express.Router();
 
-    router.get('/', async function (req, res, next) {
-        try{
-            const genre = await Genre.find();
-            res.send(genre);
-        }catch(ex){
-            next(ex);
-        }
+
+
+    router.get('/', asyncMiddleware(async function (req, res, next) {
+        const genre = await Genre.find();
+        res.send(genre);
         
-    });
+    }));
 
     router.get('/:id', async function (req, res) {
         const genre = await Genre.findById(req.params.id);
