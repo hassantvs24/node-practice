@@ -1,20 +1,13 @@
 require('dotenv').config();
-
+const winston = require('winston');
 const express = require('express');
 const app = express();
+
 require('./startup/db')();
 require('./startup/routes')(app);
-require('./startup/logging')();
-const Joi = require('joi');
-Joi.objectId = require('joi-objectid')(Joi);
+require('./startup/logging')();//Error logging
+require('./startup/config')();
+require('./startup/validation')();
 
 const port = process.env.PORT || 3000;
-
-
-
-    
-    /*const p = Promise.reject(new Error('Unhandled Rejection during startup.'));
-    p.then(() => console.log('Done'));*/
-    //throw new Error('Failed during startup.');
- 
-app.listen(3000, () => console.log(`Listening on port ${port}...`));
+app.listen(3000, () => winston.info(`Listening on port ${port}...`));
