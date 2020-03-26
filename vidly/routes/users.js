@@ -29,7 +29,9 @@ router.post('/', async function (req, res) {
    try {
         const result = await user.save();
         const token = user.generateAuthToken();
-        res.header('x-auth-token', token).send(result);
+        res.header('x-auth-token', token)
+		.header("access-control-expose-headers", "x-auth-token")
+		.send(result);
     }
     catch (ex) {
         return res.status(400).send(ex.message);
